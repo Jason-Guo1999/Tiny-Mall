@@ -1,23 +1,70 @@
 package com.jason.mall.service;
 
-import com.jason.mall.common.api.CommonResult;
-import com.jason.mall.dto.OrderParam;
+import com.jason.mall.common.api.CommonPage;
+import com.jason.mall.domain.ConfirmOrderResult;
+import com.jason.mall.domain.OmsOrderDetail;
+import com.jason.mall.domain.OrderParam;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * OmsOrder Service
  */
 public interface OmsPortalOrderService {
+    /**
+     * 根据用户购物车信息生成确认单信息
+     */
+    ConfirmOrderResult generateConfirmOrder(List<Long> cartIds);
 
     /**
-     * Generate Order
+     * 根据提交信息生成订单
      */
     @Transactional
-    CommonResult generateOrder(OrderParam orderParam);
+    Map<String, Object> generateOrder(OrderParam orderParam);
+
 
     /**
-     * Cancel Order
+     * 支付成功后的回调
+     */
+    @Transactional
+    Integer paySuccess(Long orderId, Integer payType);
+
+    /**
+     * 自动取消超时订单
+     */
+    @Transactional
+    Integer cancelTimeOutOrder();
+
+    /**
+     * 取消单个超时订单
      */
     @Transactional
     void cancelOrder(Long orderId);
+
+    /**
+     * 发送延迟消息取消订单
+     */
+    void sendDelayMessageCancelOrder(Long orderId);
+
+    /**
+     * 确认收货
+     */
+    void confirmReceiveOrder(Long orderId);
+
+    /**
+     * 分页获取用户订单
+     */
+    CommonPage<OmsOrderDetail> list(Integer status, Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据订单ID获取订单详情
+     */
+    OmsOrderDetail detail(Long orderId);
+
+    /**
+     * 用户根据订单ID删除订单
+     */
+    void deleteOrder(Long orderId);
 }
